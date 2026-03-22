@@ -1,0 +1,542 @@
+{
+  "name": "AI Content Master",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        368
+      ],
+      "id": "3deac245-0534-49ac-a245-954ccc60c38a",
+      "name": "Telegram Trigger",
+      "webhookId": "0ca01c4f-fff0-43d2-bfdc-fe949d68c631",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты — международный контент-стратег. Твоя задача — взять мою мысль и создать из неё 3 формата контента (Expert Post, Video Script, Engagement Post) и ПЕРЕВЕСТИ этот пакет на 3 языка: Английский, Польский и Испанский.\nСтруктура ответа:\n🇬🇧 ENGLISH VERSION (3 формата)\n🇵🇱 WERSJA POLSKA (3 formaty)\n🇪🇸 VERSIÓN ESPAÑOLA (3 formatos)\nИспользуй соответствующие культурные метафоры для каждого языка. Сохраняй научную глубину и археологический подтекст.\n1. Expert Longread (LinkedIn/Facebook): Глубокий, структурированный пост. Используй метафоры из археологии и науки. Сделай акцент на ценности для читателя.\n2. Video Script (Reels/Shorts/TikTok): Динамичный сценарий на 30-40 секунд. Обязательно начни с сильного «крючка» (hook).\n3. Engagement Post (Интерактив): Короткий, живой пост. В конце задай открытый вопрос аудитории.\n4. Image Prompt: Составь короткое, детальное описание на английском языке для генерации фотореалистичной или художественной иллюстрации к этому посту. Опиши освещение, стиль (например, 'Cinematic Archaeology style') и главные объекты.\nИДЕЯ АВТОРА:{{ $json.message.text }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        176,
+        368
+      ],
+      "id": "c803fc51-f7f7-4b54-bbc1-775832e91790",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        592
+      ],
+      "id": "90dc476c-cf15-4b8f-b326-bc1c35763455",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YBAqUsv0HgqPgKKP",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.split('🇬🇧')[1].split('🇵🇱')[0] }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Одобрить",
+                    "additionalFields": {
+                      "callback_data": "approve_eng"
+                    }
+                  },
+                  {
+                    "text": "Отклонить",
+                    "additionalFields": {
+                      "callback_data": "decline_eng"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        464
+      ],
+      "id": "81347863-0bd2-43cd-9e9f-75cbe1cadcf7",
+      "name": "Send a text message",
+      "webhookId": "5d10d028-53fd-4cf7-ace1-56243e196961",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.output.split('🇬🇧')[1].split('🇵🇱')[0] }}",
+        "options": {
+          "style": "natural"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        656
+      ],
+      "id": "c9669a57-d399-4c13-a233-5332f28a3359",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "YBAqUsv0HgqPgKKP",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        656
+      ],
+      "id": "e887aed4-6111-4460-b671-f336d48fa9cb",
+      "name": "Send a photo message",
+      "webhookId": "b6a47238-d60b-4d38-b859-6df468192bf6",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.split('🇪🇸')[1] }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Одобрить",
+                    "additionalFields": {
+                      "callback_data": "approve_esp"
+                    }
+                  },
+                  {
+                    "text": "Отклонить",
+                    "additionalFields": {
+                      "callback_data": "decline_esp"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        80
+      ],
+      "id": "cc5fc39a-d338-416b-b03a-8ba1f7049021",
+      "name": "Send a text message1",
+      "webhookId": "5d10d028-53fd-4cf7-ace1-56243e196961",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.split('🇵🇱')[1].split('🇪🇸')[0] }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Одобрить",
+                    "additionalFields": {
+                      "callback_data": "approve_pol"
+                    }
+                  },
+                  {
+                    "text": "Отклонить",
+                    "additionalFields": {
+                      "callback_data": "decline_pol"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        272
+      ],
+      "id": "1c1ff6aa-9f9c-4e83-aaa0-ffc252195da6",
+      "name": "Send a text message2",
+      "webhookId": "5d10d028-53fd-4cf7-ace1-56243e196961",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -240
+      ],
+      "id": "aff75592-819d-46be-9019-54242e8047c6",
+      "name": "Telegram Trigger1",
+      "webhookId": "cd644fa9-8f41-4fbc-94d6-d2d070d2a636",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "e6496ea4-cb17-454c-bc13-6600916c45b7"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b9563dfe-fc51-448b-9756-ca7518ff209b",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "decline",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        -240
+      ],
+      "id": "b5c4c9e1-34cd-45e2-958e-333324576700",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Блестящий выбор, Женя! Твой пост поставлен в очередь на публикацию в Facebook и LinkedIn. Ты — настоящий дирижер этой ИИ-симфонии!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -336
+      ],
+      "id": "a5e59aeb-d83a-4f8e-8ad6-4932917e5e09",
+      "name": "Send a text message3",
+      "webhookId": "e8a7d689-fe01-4599-ab47-2b5788096cdc",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.callback_query.message.chat.id }}",
+        "text": "Понял тебя! Черновик удален. Археологическая точность превыше всего — будем искать дальше!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -144
+      ],
+      "id": "a5b271c1-c51e-47db-a0e6-e36611cf1e89",
+      "name": "Send a text message4",
+      "webhookId": "2b478584-bfb9-496d-a4e6-0873e62b8547",
+      "credentials": {
+        "telegramApi": {
+          "id": "oOM6UQfrsc0QZE8v",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -432
+      ],
+      "id": "9659b35c-bdc5-4d2b-a4b7-f7888faa1570",
+      "name": "Facebook Graph API"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -240
+      ],
+      "id": "1f8dfd9a-95cc-4830-9eb8-8bef6505ae78",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "I91h5joFuFFtdpMo",
+          "name": "LinkedIn account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "79cb9d4a-9b0f-44b2-affd-50dee78ed857",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b8dc6b20db443e18892a3a7897076c0d1944dd1743dde315e88e0ce0d3ed7ca6"
+  },
+  "id": "y27nMOamJ9JYiV7uuXYtu",
+  "tags": []
+}
