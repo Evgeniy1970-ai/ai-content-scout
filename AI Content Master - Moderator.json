@@ -1,0 +1,601 @@
+{
+  "name": "AI Content Master - Moderator",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        256
+      ],
+      "id": "d7240399-a59a-4592-b64f-850f1390b8c9",
+      "name": "Telegram Trigger1",
+      "webhookId": "cd644fa9-8f41-4fbc-94d6-d2d070d2a636",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d2a92b5f-033e-4002-9a21-e18d15cab2c6",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "approve_eng",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6d432c4b-a1c1-40c9-95e2-a5b1fa7a79de",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "approve_pol",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7acb4d21-5b54-48cb-84f7-2289a8966aba",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "approve_esp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9a24641b-0928-452b-9759-65408fff4fef",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "decline_eng",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "685fe0c1-9eb7-41ad-97e7-009ec373b09a",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "decline_pol",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b50bdd24-25cd-469d-852a-c7ecbe3bc4b2",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "decline_esp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        176
+      ],
+      "id": "b83308bf-e42e-4bf3-8dfc-93c34b04eabb",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        720,
+        32
+      ],
+      "id": "708a32ef-2fea-46a2-8b4c-3f3cd5001b15",
+      "name": "Facebook Graph API",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "person": "83GPPaTeqr",
+        "text": "={{ $('Get row(s) in sheet').first().json['text_' + $('Telegram Trigger1').first().json.callback_query.data.replace('approve_eng','en').replace('approve_pol','pl').replace('approve_esp','es')] }}",
+        "additionalFields": {
+          "visibility": "PUBLIC"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        720,
+        256
+      ],
+      "id": "99e11fb0-1017-4aac-9967-6542cb9e4c31",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "W2rtHI0ILGTx5m7v",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Great choice, Zhenya! Your post is scheduled to be published on Facebook and LinkedIn. You’re the true conductor of this AI symphony!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "02050fc0-4c7d-47b3-943a-ee8228976df0",
+      "name": "Confirm EN",
+      "webhookId": "e8a7d689-fe01-4599-ab47-2b5788096cdc",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Świetny wybór, Zhenya! Twój post jest w kolejce do publikacji na Facebook i LinkedIn. Jesteś prawdziwym dyrygentem tej symfonii AI!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        160
+      ],
+      "id": "c2d1a957-06b0-4441-86bd-59fc216c080f",
+      "name": "Confirm PL",
+      "webhookId": "734a6bed-ef2c-49bd-8c04-c41f1401337b",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "¡Brillante elección, Zhenya! Tu post está en cola para publicación en Facebook y LinkedIn. ¡Eres el verdadero director de esta sinfonía de IA!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        304
+      ],
+      "id": "caba3f33-c001-4c5f-8c9d-6b8dacfe26b5",
+      "name": "Confirm ES",
+      "webhookId": "6d3ad0b2-7504-4dc1-932e-e85d0ee9bbed",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.callback_query.message.chat.id }}",
+        "text": "Got it! Draft deleted. Archaeological precision above all — keep searching!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        480
+      ],
+      "id": "a3a3f349-8da3-4452-a114-e9f481ccd39f",
+      "name": "Decline EN",
+      "webhookId": "2b478584-bfb9-496d-a4e6-0873e62b8547",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Rozumiem! Szkic usunięty. Precyzja archeologiczna przede wszystkim — szukamy dalej!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        112,
+        592
+      ],
+      "id": "cd090ae8-3d16-40d6-9e3e-df2f43411eed",
+      "name": "Decline PL",
+      "webhookId": "d75e298e-8f7c-4d2c-b438-52bf5ab6746e",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "¡Entendido! Borrador eliminado. ¡La precisión arqueológica ante todo — seguimos buscando!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        656
+      ],
+      "id": "3fe3f3eb-7a34-4899-a0ba-8fb1ccb9f287",
+      "name": "Decline ES",
+      "webhookId": "46afed54-17dd-4fe0-8631-33de4237db66",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4471dc16-b82e-42d8-b153-de44dc6c5395",
+              "leftValue": "={{ $json.callback_query.from.id.toString() }}",
+              "rightValue": "391064585",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        256
+      ],
+      "id": "8b3c7ba7-338b-4a8c-adce-4c5437db8d68",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": " Sorry, this bot only works for its owner.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        448
+      ],
+      "id": "abc91151-744e-4a94-b789-cbb2797b3b29",
+      "name": "Send a text message1",
+      "webhookId": "a73ac616-3377-40b4-8e70-87ae8db666f7",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJYDHzUrkfmVz8Q2",
+          "name": "Telegram - AI Content Master"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1y3oEjUD6p5Xy8gr5r58RgDIkUj3P5xeH97tkKuIS1qY"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y3oEjUD6p5Xy8gr5r58RgDIkUj3P5xeH97tkKuIS1qY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat_id",
+              "lookupValue": "={{ $('Telegram Trigger1').first().json.callback_query.from.id }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        80
+      ],
+      "id": "0056e30b-a8ae-4ff0-8946-b7f27f787988",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Zrtz0hcs5F52TfNm",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger1": [
+      {
+        "json": {
+          "callback_query": {
+            "data": "approve_eng",
+            "from": {
+              "id": 391064585,
+              "first_name": "Evhenij"
+            },
+            "message": {
+              "chat": {
+                "id": 391064585
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Confirm EN",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm PL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Confirm ES",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Decline EN",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Decline PL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Decline ES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm EN": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm PL": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm ES": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "23011f32-e995-40d1-bf92-7e58958ec9b6",
+  "meta": {
+    "instanceId": "b8dc6b20db443e18892a3a7897076c0d1944dd1743dde315e88e0ce0d3ed7ca6"
+  },
+  "id": "-aEKKx1umxKu-rhKWdKTF",
+  "tags": []
+}
